@@ -1,0 +1,92 @@
+package farmer.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import farmer.dto.CropDto;
+import farmer.dto.FarmerDto;
+import farmer.model.Address;
+import farmer.model.BankAccountDeatil;
+import farmer.model.Crop;
+import farmer.model.FarmerModel;
+import farmer.repopsitory.AddressRepository;
+import farmer.repopsitory.BankAccountRepository;
+import farmer.repopsitory.CropRespository;
+import farmer.repopsitory.FarmerRepository;
+
+@Service
+public class FarmerService {
+
+	@Autowired
+	public FarmerModel farmerModel;
+	@Autowired
+	public CropRespository cropRepo;
+	@Autowired
+	public BankAccountRepository bankRepo;
+	@Autowired
+	public AddressRepository addressRepo;
+	@Autowired
+	public FarmerRepository repo;
+
+	public boolean register(FarmerDto farmerDto) {
+
+		Address address = new Address(farmerDto.getHouseNo(), farmerDto.getLocality(), farmerDto.getTown(),
+				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode());
+		addressRepo.save(address);
+
+		BankAccountDeatil bankAccountDeatil = new BankAccountDeatil(farmerDto.getBankAccountHolderName(),
+				farmerDto.getBankAccountNo(), farmerDto.getIfscCode());
+		bankRepo.save(bankAccountDeatil);
+
+		Crop crops = new Crop(farmerDto.getId(), farmerDto.getCropName(), farmerDto.getCropType(),
+				farmerDto.getCropQuantity(), farmerDto.getPrice(), null);
+		cropRepo.save(crops);
+
+		FarmerModel farmerModel = new FarmerModel(farmerDto.getFirstName(), farmerDto.getLastName(),
+				farmerDto.getEmail(), farmerDto.getContact(), farmerDto.getUserName(), farmerDto.getPassword(), address,
+				null, bankAccountDeatil, farmerDto.getRating());
+
+		farmerModel.getCrops().add(crops);
+		crops.setFarmer(farmerModel);
+		cropRepo.save(crops);
+		repo.save(farmerModel);
+		return true;
+	}
+
+	public boolean addCrop(CropDto crop) {
+		FarmerModel farmer = repo.getById(crop.getUserName());
+		Crop crops = new Crop(crop.getId(), crop.getCropName(), crop.getCropType(), crop.getCropQuantity(),
+				crop.getPrice(), farmer);
+		cropRepo.save(crops);
+		farmer.getCrops().add(crops);
+		cropRepo.save(crops);
+		return true;
+	}
+
+	public void removeCrop(int id) {
+		cropRepo.deleteById(id);
+	}
+
+	public List<FarmerModel> getFarmerCrops() {
+
+		return repo.findAll();
+
+	}
+
+	public void removeFamer(String userName) {
+		repo.deleteById(userName);
+
+	}
+
+	/*
+	 * public void rateFarmer(int rating) {
+	 * 
+	 * FarmerModel farmer = new FarmerModel(); farmer.setRating(rating);
+	 * repo.save(farmer);
+	 * 
+	 * }
+	 */
+}

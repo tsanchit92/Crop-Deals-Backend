@@ -1,0 +1,48 @@
+package farmer.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import farmer.model.Crop;
+import farmer.model.FarmerModel;
+import farmer.repopsitory.FarmerRepository;
+
+@RestController
+@RequestMapping("/farmer")
+public class FarmerController{
+
+	@Autowired
+	public FarmerRepository repo;
+	
+	@Autowired
+	public FarmerModel farmerModel;
+	
+	@Autowired
+	public Crop crop;
+	
+	
+	@PostMapping("/register")
+	public String register(@RequestBody(farmerModel) farmerModel)
+	{
+		register(farmerModel);
+	}
+	
+	@PostMapping("/addCrop")
+	public String addCrop(@RequestBody(crop) crop)
+	{
+		addCrop(crop);
+	}
+	
+	@DeleteMapping("/removeCrop")
+	public String removeCrop(@RequestBody(crop) crop)
+	{
+		removeCrop(crop);
+	}
+	
+	
+}
+

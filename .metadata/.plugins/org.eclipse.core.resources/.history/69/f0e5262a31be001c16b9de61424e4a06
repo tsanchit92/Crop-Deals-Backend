@@ -1,0 +1,9 @@
+package farmer.repopsitory;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import farmer.model.Crop;
+
+public interface CropRespository extends JpaRepository<Crop, Integer>{
+
+}

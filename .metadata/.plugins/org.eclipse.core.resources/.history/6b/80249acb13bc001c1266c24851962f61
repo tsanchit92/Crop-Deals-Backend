@@ -1,0 +1,10 @@
+package farmer.model;
+
+public class BankAccountDeatil {
+	public String bankAccountHolderName;
+	public int bankAccountNo;
+	public String ifscCode;
+	
+	
+
+}

@@ -1,0 +1,25 @@
+package farmer.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import farmer.repopsitory.FarmerRepository;
+
+@RestController
+@RequestMapping("/farmer")
+public class FarmerController 
+{
+	@Autowired
+	public FarmerRepository repo;
+	
+	
+	@PostMapping("/register")
+	public String register(@RequestBody(FarmerModel) farmerModel)
+	{
+		repo.save(farmerModel);
+	}
+
+}
+

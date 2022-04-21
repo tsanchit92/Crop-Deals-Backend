@@ -1,0 +1,5 @@
+package admin.repository;
+
+public interface AdminRepository {
+
+}

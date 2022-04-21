@@ -1,0 +1,55 @@
+package farmer.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import farmer.dto.CropDto;
+import farmer.dto.FarmerDto;
+import farmer.model.Crop;
+import farmer.service.FarmerService;
+
+@RestController
+@RequestMapping("/farmer")
+public class FarmerController {
+
+	@Autowired
+	public FarmerService farmerService;
+
+	@GetMapping("/getCrops")
+	public List<Crop> getFarmerCrops() {
+		return farmerService.getFarmerCrops();
+	}
+
+	@DeleteMapping("/deletefarmer")
+	public void deleteFarmer(@RequestBody String userName) {
+		farmerService.removeFamer(userName);
+	}
+
+	@PostMapping("/register")
+	public boolean register(@RequestBody FarmerDto farmerModel) {
+		return farmerService.register(farmerModel);
+	}
+
+	@PostMapping("/addCrop")
+	public boolean addCrop(@RequestBody CropDto crop) {
+		return farmerService.addCrop(crop);
+	}
+
+	@DeleteMapping("/removeCrop")
+	public void removeCrop(@RequestBody int id) {
+		farmerService.removeCrop(id);
+	}
+
+	/*
+	 * @PostMapping("/rating") public void rateFarmer(int rating) {
+	 * farmerService.rateFarmer(rating); }
+	 */
+
+}

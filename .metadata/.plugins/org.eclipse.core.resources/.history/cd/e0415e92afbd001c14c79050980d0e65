@@ -1,0 +1,14 @@
+package farmer.dto;
+
+public class farmerDto {
+	
+	
+	public String firstName;
+	public String lastName;
+	public String email;
+	public int contact;
+	public String userName;
+	public String password;
+	public int rating;
+	
+}

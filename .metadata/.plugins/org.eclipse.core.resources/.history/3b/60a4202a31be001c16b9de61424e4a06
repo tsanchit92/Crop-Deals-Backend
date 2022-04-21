@@ -1,0 +1,9 @@
+package farmer.repopsitory;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import farmer.model.Address;
+
+public interface AddressRepository extends JpaRepository<Address, String>{
+
+}

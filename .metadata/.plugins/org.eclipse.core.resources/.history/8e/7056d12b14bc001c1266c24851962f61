@@ -1,0 +1,5 @@
+package farmer.repopsitory;
+
+public interface AddressRepository {
+
+}

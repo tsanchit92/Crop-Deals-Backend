@@ -1,0 +1,69 @@
+package farmer.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import farmer.model.Address;
+import farmer.model.Crop;
+import farmer.model.FarmerModel;
+import farmer.repopsitory.AddressRepository;
+import farmer.repopsitory.BankAccountRepository;
+import farmer.repopsitory.CropRespository;
+import farmer.repopsitory.FarmerRepository;
+
+@Service
+public class FarmerService {
+
+	@Autowired
+	public FarmerModel farmerModel;
+	@Autowired
+	public CropRespository cropRepo;
+	@Autowired
+	public BankAccountRepository bankRepo;
+	@Autowired
+	public AddressRepository addressRepo;
+	@Autowired
+	public FarmerRepository repo;
+
+	public void register(FarmerModel farmerModel) {
+		repo.save(farmerModel);
+		addressRepo.save(farmerModel.getAddress());
+		cropRepo.save(farmerModel.getCrops());
+		bankRepo.save(farmerModel.getBankAccountDeatil());
+	}
+
+	public void addCrop(Crop crop) {
+		cropRepo.save(crop);
+	}
+
+	public void removeCrop(Crop crop) {
+		cropRepo.delete(crop);
+	}
+
+	public void editProfile(FarmerModel farmerModel, @RequestBody Address address, @RequestBody Crop crop) {
+		repo.save(farmerModel);
+		addressRepo.save(address);
+		cropRepo.save(crop);
+	}
+
+	public List<FarmerModel> getFarmerCrops() {
+
+		return repo.findAll();
+
+	}
+
+	public void removeFamer(FarmerModel farmerModel) {
+		repo.delete(farmerModel);
+		
+	}
+
+	public void rateFarmer(int rating) {
+		
+		farmerModel.setRating(rating);
+		repo.save(farmerModel);
+		
+	}
+}

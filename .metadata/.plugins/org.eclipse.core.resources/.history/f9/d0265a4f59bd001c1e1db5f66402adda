@@ -1,0 +1,31 @@
+package farmer.model;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name ="farmer")
+public class FarmerModel {
+	public int id;
+	public String firstName;
+	public String lastName;
+	public String email;
+	public int contact;
+	public String userName;
+	public String password;
+	public Address address;
+	public Crop crops;
+	public BankAccountDeatil bankAccountDeatil;
+	 
+	 
+
+}
