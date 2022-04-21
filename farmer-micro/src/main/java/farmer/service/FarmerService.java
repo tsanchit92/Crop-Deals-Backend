@@ -120,14 +120,15 @@ public class FarmerService {
 
 	public Address getAddress(String id) {
 		
-		FarmerModel farmerModel = repo.findById(id);
-		return farmerModel.getAddress()
+		FarmerModel farmerModel = repo.findById(id).get();
+		return farmerModel.getAddress();
 		
 	}
 
-	public Optional<BankAccountDeatil> getbankDetails(String id) {
+	public BankAccountDeatil getbankDetails(String id) {
 				
-	 repo.findById(id));
+		FarmerModel farmerModel = repo.findById(id).get();
+		return farmerModel.getBankAccountDeatil();
 	}
 
 }

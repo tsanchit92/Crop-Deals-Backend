@@ -1,9 +1,0 @@
-package farmer.repopsitory;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import farmer.model.FarmerModel;
-
-public interface FarmerRepository extends JpaRepository<FarmerModel, ID> {
-
-}

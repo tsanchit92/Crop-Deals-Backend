@@ -2,15 +2,12 @@
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="com.netflix.discovery.converters.Auto"/>
     <fullyQualifiedTypeName name="farmer.repopsitory.FarmerRepository"/>
-    <fullyQualifiedTypeName name="farmer.model.BankAccountDeatil"/>
     <fullyQualifiedTypeName name="farmer.repopsitory.CropRespository"/>
     <fullyQualifiedTypeName name="farmer.repopsitory.BankAccountRepository"/>
     <fullyQualifiedTypeName name="farmer.repopsitory.AddressRepository"/>
     <fullyQualifiedTypeName name="farmer.service.FarmerService"/>
-    <fullyQualifiedTypeName name="farmer.model.Address"/>
     <fullyQualifiedTypeName name="farm.repository.FarmRepository"/>
     <fullyQualifiedTypeName name="org.springframework.core.ParameterizedTypeReference"/>
-    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.GetMapping"/>
     <fullyQualifiedTypeName name="farm.model.BankAccountDeatil"/>
     <fullyQualifiedTypeName name="farm.model.FarmModel"/>
     <fullyQualifiedTypeName name="com.google.common.net.HttpHeaders"/>
@@ -36,9 +33,7 @@
     <fullyQualifiedTypeName name="farmer.model.Crop"/>
     <fullyQualifiedTypeName name="farmer.dto.CropDto"/>
     <fullyQualifiedTypeName name="javax.persistence.CascadeType"/>
-    <fullyQualifiedTypeName name="farmer.dto.FarmerDto"/>
     <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.DeleteMapping"/>
-    <fullyQualifiedTypeName name="farmer.model.FarmerModel"/>
     <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PostMapping"/>
     <fullyQualifiedTypeName name="javax.persistence.Id"/>
     <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
@@ -56,4 +51,12 @@
     <fullyQualifiedTypeName name="org.hibernate.annotations.LazyCollectionOption"/>
     <fullyQualifiedTypeName name="org.springframework.http.MediaType"/>
     <fullyQualifiedTypeName name="java.lang.String"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PutMapping"/>
+    <fullyQualifiedTypeName name="farmer.model.Address"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.GetMapping"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.RequestParam"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PathVariable"/>
+    <fullyQualifiedTypeName name="farmer.model.BankAccountDeatil"/>
+    <fullyQualifiedTypeName name="farmer.dto.FarmerDto"/>
+    <fullyQualifiedTypeName name="farmer.model.FarmerModel"/>
 </qualifiedTypeNameHistroy>
