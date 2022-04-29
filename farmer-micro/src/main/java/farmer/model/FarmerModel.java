@@ -45,7 +45,7 @@ public class FarmerModel {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public Address address;
 	@JsonIgnore
-	@OneToMany(mappedBy = "farmer",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "farmer",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
 	public List<Crop> crops=new ArrayList<>();
 	/* @JsonIgnore */
 	@OneToOne(cascade=CascadeType.ALL)

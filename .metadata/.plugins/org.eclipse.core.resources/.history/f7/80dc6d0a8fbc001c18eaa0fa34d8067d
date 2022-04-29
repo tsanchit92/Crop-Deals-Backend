@@ -1,5 +1,0 @@
-package farm.repository;
-
-public interface FarmRepository {
-
-}

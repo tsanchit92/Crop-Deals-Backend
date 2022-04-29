@@ -1,10 +1,14 @@
 package farmer.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import farmer.dto.CropDto;
@@ -14,6 +18,7 @@ import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
 import farmer.model.FarmerModel;
+import farmer.model.UserLogin;
 import farmer.repopsitory.AddressRepository;
 import farmer.repopsitory.BankAccountRepository;
 import farmer.repopsitory.CropRespository;
@@ -21,6 +26,14 @@ import farmer.repopsitory.FarmerRepository;
 
 @Service
 public class FarmerService {
+	@Autowired
+	private AmqpTemplate rabbitTemplate;
+
+	@Value("${tsanchit92.rabbitmq.exchange}")
+	private String exchange;
+
+	@Value("${tsanchit92.rabbitmq.routingkey}")
+	private String routingkey;
 
 	@Autowired
 	public CropRespository cropRepo;
@@ -34,7 +47,7 @@ public class FarmerService {
 	public boolean register(FarmerDto farmerDto) {
 
 		Address address = new Address(farmerDto.getHouseNo(), farmerDto.getLocality(), farmerDto.getTown(),
-				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode());
+				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode(), null);
 		addressRepo.save(address);
 
 		BankAccountDeatil bankAccountDeatil = new BankAccountDeatil(farmerDto.getBankAccountHolderName(),
@@ -51,9 +64,17 @@ public class FarmerService {
 
 		farmerModel.getCrops().add(crops);
 		crops.setFarmer(farmerModel);
+		address.setFarmer(farmerModel);
 		cropRepo.save(crops);
+		addressRepo.save(address);
 		repo.save(farmerModel);
+
+		UserLogin login = new UserLogin(farmerDto.getUserName(), farmerDto.getPassword(), "farmer");
+		rabbitTemplate.convertAndSend(exchange, routingkey, login);
+		System.out.println("Send msg = " + login);
+
 		return true;
+
 	}
 
 	public boolean addCrop(CropDto crop) {
@@ -68,26 +89,43 @@ public class FarmerService {
 
 	public boolean removeCrop(CropDto cropdto) {
 
-		cropRepo.deleteById(cropdto.getId());
+		FarmerModel farmerModel = repo.findById(cropdto.getUserName()).get();
+		for (Crop crop : farmerModel.getCrops()) {
+			if (crop.getId() == cropdto.getId()) {
+
+				farmerModel.getCrops().remove(crop);
+				cropRepo.delete(crop);
+				repo.save(farmerModel);
+
+			}
+		}
 
 		return true;
 	}
 
 	public List<Crop> getFarmerCrops() {
-
-		return cropRepo.findAll();
+		List<Crop> finalCrop= new ArrayList<>();
+		List<Crop> crop = cropRepo.findAll();
+		for(Crop i:crop)
+		{
+			if(i.getCropQuantity()>0)
+			{
+				finalCrop.add(i);
+			}
+		}
+		return finalCrop;
 
 	}
 
-	public void removeFamer(FarmerDto farmerDto) {
+	public void removeFamer(String userName) {
 
-		repo.deleteById(farmerDto.getUserName());
+		repo.deleteById(userName);
 
 	}
 
 	public boolean rateFarmer(RatingDto dto) {
 
-		FarmerModel farmer ;
+		FarmerModel farmer;
 		farmer = repo.getById(dto.getUserId());
 		farmer.setRating(dto.getRating());
 		repo.save(farmer);
@@ -102,16 +140,14 @@ public class FarmerService {
 		farmer.setLastName(dto.getLastName());
 		farmer.setEmail(dto.getEmail());
 		farmer.setContact(dto.getContact());
-	
 
 		Address address = new Address(dto.getHouseNo(), dto.getLocality(), dto.getTown(), dto.getDistrict(),
-				dto.getState(), dto.getPostalCode());
+				dto.getState(), dto.getPostalCode(), null);
 		farmer.setAddress(address);
-		
 
 		BankAccountDeatil bankAccountDeatil = new BankAccountDeatil(dto.getBankAccountHolderName(),
 				dto.getBankAccountNo(), dto.getIfscCode());
-		
+
 		farmer.setBankAccountDeatil(bankAccountDeatil);
 		repo.save(farmer);
 
@@ -119,16 +155,28 @@ public class FarmerService {
 	}
 
 	public Address getAddress(String id) {
-		
+
 		FarmerModel farmerModel = repo.findById(id).get();
 		return farmerModel.getAddress();
-		
+
 	}
 
 	public BankAccountDeatil getbankDetails(String id) {
-				
+
 		FarmerModel farmerModel = repo.findById(id).get();
 		return farmerModel.getBankAccountDeatil();
+	}
+
+	public Boolean quantityManagement(HashMap<Integer, Integer> CropIds) {
+		Iterator<Map.Entry<Integer, Integer>> itr = CropIds.entrySet().iterator();
+		while (itr.hasNext()) {
+			Map.Entry<Integer, Integer> entry = itr.next();
+
+			Crop crop = cropRepo.findById(entry.getKey()).get();
+			crop.setCropQuantity(crop.getCropQuantity() - entry.getValue());
+			;
+		}
+		return null;
 	}
 
 }

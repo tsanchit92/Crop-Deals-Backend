@@ -1,22 +1,26 @@
 package farm.controller;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import farm.dto.RatingDto;
 import farm.model.Crop;
 import farm.model.FarmModel;
-import farm.model.FarmerModel;
 import farm.service.FarmService;
-import farmer.dto.RatingDto;
 
 @RestController
 @RequestMapping("/farm")
@@ -45,9 +49,9 @@ public class FarmController {
 		return service.getFarmers();
 	}
 
-	@DeleteMapping("/removeFarm")
-	public void removeFarm(@RequestBody FarmModel farmModel) {
-		service.removeDealer(farmModel);
+	@DeleteMapping("/removeFarm/{farmId}")
+	public void removeFarm(@PathVariable int farmId) {
+		service.removeDealer(farmId);
 	}
 
 	@PostMapping("/editProfile")
@@ -58,6 +62,13 @@ public class FarmController {
 	@PostMapping("/rateFarmer")
 	public boolean rateFarmer(@RequestBody RatingDto dto) {
 		return service.rateFarmer(dto);
+	}
+
+	@GetMapping(value = "/sendemail")
+	public String send() throws AddressException, MessagingException, IOException {
+
+		service.sendEmail();
+		return "Email sent successfully";
 	}
 
 }

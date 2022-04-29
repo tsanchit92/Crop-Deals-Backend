@@ -1,7 +1,7 @@
 package farmer.controller;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import farmer.dto.CropDto;
@@ -20,7 +19,6 @@ import farmer.dto.RatingDto;
 import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
-import farmer.model.FarmerModel;
 import farmer.service.FarmerService;
 
 @RestController
@@ -41,9 +39,9 @@ public class FarmerController {
 		return farmerService.getFarmerCrops();
 	}
 
-	@DeleteMapping("/deletefarmer")
-	public void deleteFarmer(@RequestBody FarmerDto farmerDto) {
-		farmerService.removeFamer(farmerDto);
+	@DeleteMapping("/deletefarmer/{userName}")
+	public void deleteFarmer(@PathVariable String userName) {
+		farmerService.removeFamer(userName);
 	}
 
 	@PostMapping("/register")
@@ -73,14 +71,20 @@ public class FarmerController {
 	}
 	
 	@GetMapping("/getAddress/{id}")
-	public Optional<Address> getAddress(@PathVariable String id)
+	public Address getAddress(@PathVariable String id)
 	{
 		return farmerService.getAddress(id);
 	}
 
 	@GetMapping("/getbankDetails/{id}")
-	public Optional<BankAccountDeatil> getbaknDetails(@PathVariable String id)
+	public BankAccountDeatil getbaknDetails(@PathVariable String id)
 	{
 		return farmerService.getbankDetails(id);
+	}
+	
+	@PostMapping("/quantityManagement")
+	public Boolean quantityManagement(@RequestBody HashMap<Integer, Integer> CropIds)
+	{
+		return farmerService.quantityManagement(CropIds);
 	}
 }

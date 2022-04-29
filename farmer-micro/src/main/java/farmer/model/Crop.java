@@ -25,10 +25,10 @@ public class Crop {
 	public int id;
 	public String cropName;
 	public String cropType;
-	public String cropQuantity;
-	public String price;
+	public int cropQuantity;
+	public int price;
 	@JsonIgnore
-	@ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH,CascadeType.DETACH})
+	@ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH})
 	@JoinColumn(name = "userName",referencedColumnName = "userName")
 	private FarmerModel farmer;
 }

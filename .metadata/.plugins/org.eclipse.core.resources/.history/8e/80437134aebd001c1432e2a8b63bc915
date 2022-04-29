@@ -1,7 +1,0 @@
-package farmer.dto;
-
-public class farmerDto {
-	public String userName;
-	
-
-}

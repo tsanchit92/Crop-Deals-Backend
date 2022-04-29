@@ -1,23 +1,28 @@
 package admin.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import admin.model.AdminModel;
-import admin.repository.AdminRepository;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class AdminService {
 	
-	@Autowired
-	public AdminRepository repo;
-	
-	public void register(AdminModel admin) {
-		repo.save(admin);
-	}
+	WebClient webClient =WebClient.create("http://localhost:11000");
+	WebClient webClient2 =WebClient.create("http://localhost:8000");
 
-	public void delete(String userName) {
+	public Boolean deleteFarm(int farmId) {
 		
+		return webClient.delete()
+				.uri("/farm/removeFarm/" +farmId)
+				.retrieve()
+				.bodyToMono(Boolean.class).block();
+	}
+	
+	public Boolean deleteFarmer(String userName) {
+		return webClient2.delete()
+				.uri("/farmer/deletefarmer/" + userName)
+				.retrieve()
+				.bodyToMono(Boolean.class).block();
+
 		
 	}
 

@@ -28,11 +28,10 @@ public class FarmerDto {
 	public int id;
 	public String cropName;
 	public String cropType;
-	public String cropQuantity;
-	public String price;
+	public int cropQuantity;
+	public int price;
 	public int bankAccountNo;
 	public String ifscCode;
 	public String bankAccountHolderName;
-
 	
 }

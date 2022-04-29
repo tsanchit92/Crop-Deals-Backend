@@ -1,7 +1,6 @@
 package admin.model;
 
-import javax.persistence.Id;
-
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collation = "admin")
+@Document("admin-service")
 public class AdminModel {
 	@Id
 	public String userName;

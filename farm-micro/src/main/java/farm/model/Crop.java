@@ -14,8 +14,8 @@ public class Crop {
 	public int id;
 	public String cropName;
 	public String cropType;
-	public String cropQuantity;
-	public String price;
-	public FarmerModel farmer;
+	public int cropQuantity;
+	public int price;
+
 
 }

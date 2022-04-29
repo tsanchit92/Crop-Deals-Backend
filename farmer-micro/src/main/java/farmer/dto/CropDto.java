@@ -15,7 +15,7 @@ public class CropDto {
 	public int id;
 	public String cropName;
 	public String cropType;
-	public String cropQuantity;
-	public String price;
+	public int cropQuantity;
+	public int price;
 
 }
