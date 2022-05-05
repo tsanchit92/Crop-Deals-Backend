@@ -1,13 +1,20 @@
 package admin.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import admin.model.FarmModel;
+import admin.model.FarmerModel;
+import admin.model.OrderModel;
 import admin.service.AdminService;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -20,8 +27,23 @@ public class AdminController {
 		adminService.deleteFarmer(userName);
 	}
 
-	@DeleteMapping("/deleteFarm/{farmId}")
-	public void deleteFarm(@PathVariable int farmId) {
-		adminService.deleteFarm(farmId);
+	@DeleteMapping("/deleteFarm/{userName}")
+	public void deleteFarm(@PathVariable String userName) {
+		adminService.deleteFarm(userName);
+	}
+	@GetMapping("/getAllFarmer")
+	public List<FarmerModel> getAllFarmers()
+	{
+		return adminService.getAllFarmers();
+	}
+	@GetMapping("/getAllFarm")
+	public List<FarmModel> getAllFarm()
+	{
+		return adminService.getAllFarm();
+	}
+	@GetMapping("/getAllOrders")
+	public List<OrderModel> getAllOrders()
+	{
+		return adminService.getAllOrders();
 	}
 }

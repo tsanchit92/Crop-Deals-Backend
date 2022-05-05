@@ -12,7 +12,7 @@ import lombok.Setter;
 
 public class BankAccountDeatil {
 	public String bankAccountHolderName;
-	public int bankAccountNo;
+	public long bankAccountNo;
 	public String ifscCode;
 	
 	

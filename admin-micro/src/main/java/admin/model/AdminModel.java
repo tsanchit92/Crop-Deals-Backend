@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Document("admin-service")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document("admin-service")
 public class AdminModel {
 	@Id
 	public String userName;

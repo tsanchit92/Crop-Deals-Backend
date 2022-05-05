@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import farm.model.FarmModel;
 
 @Repository
-public interface FarmRepository extends JpaRepository<FarmModel, Integer> {
+public interface FarmRepository extends JpaRepository<FarmModel, String> {
 
 }

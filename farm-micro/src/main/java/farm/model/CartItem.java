@@ -25,7 +25,7 @@ import lombok.Setter;
 public class CartItem {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	public String cropName;
 	public String cropType;
@@ -34,9 +34,22 @@ public class CartItem {
 	private int quantity;
 	@JsonIgnore
 	@ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-	@JoinColumn(name = "farmId",referencedColumnName = "farmId")
+	@JoinColumn(name = "userName",referencedColumnName = "userName")
 	private FarmModel farmModel;
 	private  int cost;
+	public CartItem(String cropName, String cropType, int cropPrice, int cropId, int quantity, FarmModel farmModel,
+			int cost) {
+		super();
+		this.cropName = cropName;
+		this.cropType = cropType;
+		this.cropPrice = cropPrice;
+		this.cropId = cropId;
+		this.quantity = quantity;
+		this.farmModel = farmModel;
+		this.cost = cost;
+	}
+	
+	
 	
 
 

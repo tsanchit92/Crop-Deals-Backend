@@ -1,9 +1,15 @@
 package farmer.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,25 +20,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farmer.dto.CropDto;
+import farmer.dto.EditDto;
 import farmer.dto.FarmerDto;
 import farmer.dto.RatingDto;
 import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
+import farmer.model.FarmerModel;
 import farmer.service.FarmerService;
 
 @RestController
 @RequestMapping("/farmer")
+@CrossOrigin("*")
 public class FarmerController {
 
 	@Autowired
 	public FarmerService farmerService;
 	
-	@GetMapping("/started")
-	public String start()
+	@GetMapping("/getAllFarmer")
+	public List<FarmerModel> getFarmers()
 	{
-		return "started";
+		return farmerService.getFarmers();
 	}
+	
 
 	@GetMapping("/getCrops")
 	public List<Crop> getFarmerCrops() {
@@ -44,6 +54,7 @@ public class FarmerController {
 		farmerService.removeFamer(userName);
 	}
 
+
 	@PostMapping("/register")
 	public boolean register(@RequestBody FarmerDto farmerModel) {
 		return farmerService.register(farmerModel);
@@ -54,9 +65,9 @@ public class FarmerController {
 		return farmerService.addCrop(crop);
 	}
 
-	@DeleteMapping("/removeCrop")
-	public Boolean removeCrop(@RequestBody CropDto cropdto) {
-		return farmerService.removeCrop(cropdto);
+	@DeleteMapping("/removeCrop/{userName}/{id}")
+	public Boolean removeCrop(@PathVariable String userName ,@PathVariable Integer id) {
+		return farmerService.removeCrop(userName,id);
 	}
 
 	@PostMapping("/rating")
@@ -65,19 +76,19 @@ public class FarmerController {
 	}
 	
 	@PutMapping("/editProfile")
-	public boolean editProfile(FarmerDto dto)
+	public boolean editProfile(@RequestBody EditDto dto)
 	{
 		return farmerService.editProfile(dto);
 	}
 	
 	@GetMapping("/getAddress/{id}")
-	public Address getAddress(@PathVariable String id)
+	public Address getAddress(@PathVariable int id)
 	{
 		return farmerService.getAddress(id);
 	}
 
 	@GetMapping("/getbankDetails/{id}")
-	public BankAccountDeatil getbaknDetails(@PathVariable String id)
+	public BankAccountDeatil getbaknDetails(@PathVariable int id)
 	{
 		return farmerService.getbankDetails(id);
 	}
@@ -86,5 +97,23 @@ public class FarmerController {
 	public Boolean quantityManagement(@RequestBody HashMap<Integer, Integer> CropIds)
 	{
 		return farmerService.quantityManagement(CropIds);
+	}
+	
+	@PostMapping("/EmailList")
+	public Boolean SendEmail(ArrayList<String> Emails) throws AddressException, MessagingException, IOException 
+	{
+		return farmerService.saveFarmEmail(Emails);
+	}
+	
+	@GetMapping("/getFarmerDetails/{userName}")
+	public FarmerDto getDetails(@PathVariable String userName)
+	{
+		return farmerService.getFarmerDetails(userName);
+	}
+	
+	@GetMapping("/getFarmerCrops/{userName}")
+	public List<Crop> getFarmerCrops(@PathVariable  String userName)
+	{
+		return farmerService.getFarmerCrops(userName);
 	}
 }

@@ -7,36 +7,42 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
+import farm.dto.EditDto;
+import farm.dto.OrderDto;
 import farm.dto.RatingDto;
+import farm.model.Address;
+import farm.model.BankAccountDeatil;
 import farm.model.Crop;
 import farm.model.FarmModel;
 import farm.service.FarmService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/farm")
 public class FarmController {
-	@Autowired
-	private WebClient.Builder webClientBuilder;
+
 
 	@Autowired
 	public FarmService service;
 
-	@GetMapping("/getStarted")
-	public String getStr() {
-		String response = webClientBuilder.build().get().uri("http://farmer/farmer/started")
-				.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(String.class).block();
-
-		return response;
+	@GetMapping("/getAll")
+	public List<FarmModel> getAllFarm (){
+		return service.getAllFarm(); 
+	}
+	
+	@GetMapping("/getDetails/{userName}")
+	public FarmModel getDetails(@PathVariable String userName){
+		return service.getDetails(userName);
 	}
 
 	@PostMapping("/register")
@@ -49,13 +55,13 @@ public class FarmController {
 		return service.getFarmers();
 	}
 
-	@DeleteMapping("/removeFarm/{farmId}")
-	public void removeFarm(@PathVariable int farmId) {
-		service.removeDealer(farmId);
+	@DeleteMapping("/removeFarm/{userName}")
+	public void removeFarm(@PathVariable String userName) {
+		service.removeDealer(userName);
 	}
 
-	@PostMapping("/editProfile")
-	public boolean editProfile(@RequestBody FarmModel farm) {
+	@PutMapping("/editProfile")
+	public boolean editProfile(@RequestBody EditDto farm) {
 		return service.editProfile(farm);
 	}
 
@@ -69,6 +75,21 @@ public class FarmController {
 
 		service.sendEmail();
 		return "Email sent successfully";
+	}
+	@GetMapping("/getOrders")
+	public List<OrderDto> Orders()
+	{
+		return service.getOrders();
+	}
+	@GetMapping("/getAddress/{id}")
+	public Address getAddress(@PathVariable int id)
+	{
+		return service.getAddress(id);
+	}
+	@GetMapping("/getBankAccountDetails/{id}")
+	public BankAccountDeatil getBankDetails(@PathVariable int id)
+	{
+		return service.getbankDetails(id);
 	}
 
 }

@@ -15,7 +15,7 @@ public class FarmerDto {
 	public String firstName;
 	public String lastName;
 	public String email;
-	public int contact;
+	public long contact;
 	public String userName;
 	public String password;
 	public int rating;
@@ -30,7 +30,7 @@ public class FarmerDto {
 	public String cropType;
 	public int cropQuantity;
 	public int price;
-	public int bankAccountNo;
+	public long bankAccountNo;
 	public String ifscCode;
 	public String bankAccountHolderName;
 	

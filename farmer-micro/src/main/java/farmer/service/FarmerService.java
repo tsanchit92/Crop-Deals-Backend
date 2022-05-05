@@ -9,19 +9,24 @@ import java.util.Map;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import farmer.dto.CropDto;
+import farmer.dto.EditDto;
 import farmer.dto.FarmerDto;
 import farmer.dto.RatingDto;
 import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
+import farmer.model.FarmEmails;
 import farmer.model.FarmerModel;
 import farmer.model.UserLogin;
 import farmer.repopsitory.AddressRepository;
 import farmer.repopsitory.BankAccountRepository;
 import farmer.repopsitory.CropRespository;
+import farmer.repopsitory.FarmEmailRepository;
 import farmer.repopsitory.FarmerRepository;
 
 @Service
@@ -43,6 +48,10 @@ public class FarmerService {
 	public AddressRepository addressRepo;
 	@Autowired
 	public FarmerRepository repo;
+	@Autowired
+	private JavaMailSender javaMailSender;
+	@Autowired
+	private FarmEmailRepository emailRepo;
 
 	public boolean register(FarmerDto farmerDto) {
 
@@ -59,7 +68,7 @@ public class FarmerService {
 		cropRepo.save(crops);
 
 		FarmerModel farmerModel = new FarmerModel(farmerDto.getFirstName(), farmerDto.getLastName(),
-				farmerDto.getEmail(), farmerDto.getContact(), farmerDto.getUserName(), farmerDto.getPassword(), address,
+				farmerDto.getEmail(), farmerDto.getContact(),"Active", farmerDto.getUserName(), farmerDto.getPassword(), address,
 				new ArrayList<>(), bankAccountDeatil, farmerDto.getRating());
 
 		farmerModel.getCrops().add(crops);
@@ -73,6 +82,17 @@ public class FarmerService {
 		rabbitTemplate.convertAndSend(exchange, routingkey, login);
 		System.out.println("Send msg = " + login);
 
+		SimpleMailMessage msg = new SimpleMailMessage();
+		List<FarmEmails> emails = emailRepo.findAll();
+		for (FarmEmails i : emails) {
+			msg.setTo(i.getEmails());
+		}
+
+		msg.setSubject("Farmer-Dealer-Web-Service");
+		msg.setText("Checkout new crops freshly from the farms of farmer registered on our site.");
+
+		javaMailSender.send(msg);
+
 		return true;
 
 	}
@@ -84,14 +104,25 @@ public class FarmerService {
 		cropRepo.save(crops);
 		farmer.getCrops().add(crops);
 		cropRepo.save(crops);
+
+		SimpleMailMessage msg = new SimpleMailMessage();
+		List<FarmEmails> emails = emailRepo.findAll();
+		for (FarmEmails i : emails) {
+			msg.setTo(i.getEmails());
+		}
+
+		msg.setSubject("Farmer-Dealer-Web-Service");
+		msg.setText("Checkout new crops freshly from the farms of farmer registered on our site.");
+
+		javaMailSender.send(msg);
 		return true;
 	}
 
-	public boolean removeCrop(CropDto cropdto) {
+	public boolean removeCrop(String userName,Integer id) {
 
-		FarmerModel farmerModel = repo.findById(cropdto.getUserName()).get();
+		FarmerModel farmerModel = repo.findById(userName).get();
 		for (Crop crop : farmerModel.getCrops()) {
-			if (crop.getId() == cropdto.getId()) {
+			if (crop.getId() == id) {
 
 				farmerModel.getCrops().remove(crop);
 				cropRepo.delete(crop);
@@ -104,12 +135,10 @@ public class FarmerService {
 	}
 
 	public List<Crop> getFarmerCrops() {
-		List<Crop> finalCrop= new ArrayList<>();
+		List<Crop> finalCrop = new ArrayList<>();
 		List<Crop> crop = cropRepo.findAll();
-		for(Crop i:crop)
-		{
-			if(i.getCropQuantity()>0)
-			{
+		for (Crop i : crop) {
+			if (i.getCropQuantity() > 0) {
 				finalCrop.add(i);
 			}
 		}
@@ -119,7 +148,10 @@ public class FarmerService {
 
 	public void removeFamer(String userName) {
 
-		repo.deleteById(userName);
+		FarmerModel farmerModel=repo.findById(userName).get();
+		farmerModel.setStatus("Inactive");
+		repo.save(farmerModel);
+		
 
 	}
 
@@ -133,13 +165,14 @@ public class FarmerService {
 
 	}
 
-	public boolean editProfile(FarmerDto dto) {
+	public boolean editProfile(EditDto dto) {
 		FarmerModel farmer = new FarmerModel();
-		farmer = repo.getById(dto.getUserName());
+		farmer = repo.findById(dto.getUserName()).get();
 		farmer.setFirstName(dto.getFirstName());
 		farmer.setLastName(dto.getLastName());
 		farmer.setEmail(dto.getEmail());
 		farmer.setContact(dto.getContact());
+		farmer.setUserName(dto.getUserName());
 
 		Address address = new Address(dto.getHouseNo(), dto.getLocality(), dto.getTown(), dto.getDistrict(),
 				dto.getState(), dto.getPostalCode(), null);
@@ -148,23 +181,26 @@ public class FarmerService {
 		BankAccountDeatil bankAccountDeatil = new BankAccountDeatil(dto.getBankAccountHolderName(),
 				dto.getBankAccountNo(), dto.getIfscCode());
 
+		bankRepo.save(bankAccountDeatil);
 		farmer.setBankAccountDeatil(bankAccountDeatil);
 		repo.save(farmer);
+		address.setFarmer(farmer);
+		addressRepo.save(address);
 
 		return true;
 	}
 
-	public Address getAddress(String id) {
+	public Address getAddress(int  id) {
 
-		FarmerModel farmerModel = repo.findById(id).get();
-		return farmerModel.getAddress();
+		Crop crop =cropRepo.findById(id).get();
+		return crop.getFarmer().getAddress();
 
 	}
 
-	public BankAccountDeatil getbankDetails(String id) {
+	public BankAccountDeatil getbankDetails(int id) {
 
-		FarmerModel farmerModel = repo.findById(id).get();
-		return farmerModel.getBankAccountDeatil();
+		Crop crop =cropRepo.findById(id).get();
+		return crop.getFarmer().getBankAccountDeatil();
 	}
 
 	public Boolean quantityManagement(HashMap<Integer, Integer> CropIds) {
@@ -174,9 +210,44 @@ public class FarmerService {
 
 			Crop crop = cropRepo.findById(entry.getKey()).get();
 			crop.setCropQuantity(crop.getCropQuantity() - entry.getValue());
-			;
+			cropRepo.save(crop);
+			
 		}
 		return null;
+	}
+
+	public Boolean saveFarmEmail(ArrayList<String> Emails) {
+
+		for (String i : Emails) {
+			FarmEmails farmEmails = new FarmEmails(i);
+			emailRepo.save(farmEmails);
+
+		}
+
+		return true;
+	}
+
+	public FarmerDto getFarmerDetails(String userName) {
+		FarmerModel farmerModel = repo.findById(userName).get();
+		FarmerDto farmerDto = new FarmerDto(farmerModel.getFirstName(),farmerModel.getLastName(),farmerModel.getEmail(),
+				farmerModel.getContact(),farmerModel.getUserName(),farmerModel.getPassword(),farmerModel.getRating(),
+				farmerModel.getAddress().getHouseNo(),farmerModel.getAddress().getLocality(),farmerModel.getAddress().getTown(),farmerModel.getAddress().getDistrict(),
+				farmerModel.getAddress().getState(),farmerModel.getAddress().getPostalCode(),0,null,null,0,0,farmerModel.getBankAccountDeatil().getBankAccountNo(),
+				farmerModel.getBankAccountDeatil().getIfscCode(),farmerModel.getBankAccountDeatil().getBankAccountHolderName());
+		
+		return farmerDto;
+	}
+	
+	public List<Crop> getFarmerCrops(String userName)
+	{
+		FarmerModel farmerModel =repo.findById(userName).get();
+		return farmerModel.getCrops();
+		
+	}
+
+	public List<FarmerModel> getFarmers() {
+	
+		return repo.findAll();
 	}
 
 }

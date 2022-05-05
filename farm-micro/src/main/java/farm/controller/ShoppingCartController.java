@@ -1,8 +1,7 @@
 package farm.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import farm.dto.CartBillDto;
 import farm.dto.CartItemDto;
-import farm.model.CartItem;
 import farm.service.ShoppingcartItemService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/cart")
 public class ShoppingCartController {
@@ -23,9 +22,9 @@ public class ShoppingCartController {
 	@Autowired
 	public ShoppingcartItemService shoppingcartItemService;
 
-	@GetMapping("/getCart/{farmId}")
-	public CartBillDto getCart(@PathVariable int farmId) {
-		return shoppingcartItemService.listCartItem(farmId);
+	@GetMapping("/getCart/{userName}")
+	public CartBillDto getCart(@PathVariable String userName) {
+		return shoppingcartItemService.listCartItem(userName);
 
 	}
 
@@ -39,10 +38,15 @@ public class ShoppingCartController {
 		return shoppingcartItemService.removeItems(cartItemDto);
 	}
 	
-	@GetMapping("/checkOut")
-	public Boolean checkout(int farmId)
+	@GetMapping("/checkOut/{userName}")
+	public Boolean checkout(@PathVariable String userName)
 			{
-				return shoppingcartItemService.checkout(farmId);
+				return shoppingcartItemService.checkout(userName);
+			}
+	@GetMapping("/pay")
+	public String pay()
+			{
+				return shoppingcartItemService.pay();
 			}
 
 }

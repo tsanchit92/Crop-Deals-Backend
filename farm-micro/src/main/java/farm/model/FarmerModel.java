@@ -14,7 +14,7 @@ public class FarmerModel {
 	public String firstName;
 	public String lastName;
 	public String email;
-	public int contact;
+	public long contact;
 	public String userName;
 	public String password;
 	public Address address;

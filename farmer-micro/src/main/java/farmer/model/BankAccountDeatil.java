@@ -18,7 +18,7 @@ import lombok.Setter;
 public class BankAccountDeatil {
 	public String bankAccountHolderName;
 	@Id
-	public int bankAccountNo;
+	public long bankAccountNo;
 	public String ifscCode;
 	
 	
