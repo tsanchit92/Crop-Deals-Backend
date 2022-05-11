@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import farm.dto.CartBillDto;
 import farm.dto.CartItemDto;
-import farm.service.ShoppingcartItemService;
+import farm.serviceInterface.ShoppingCartServiceInterface;
 
 @CrossOrigin
 @RestController
@@ -20,7 +20,7 @@ import farm.service.ShoppingcartItemService;
 public class ShoppingCartController {
 
 	@Autowired
-	public ShoppingcartItemService shoppingcartItemService;
+	public ShoppingCartServiceInterface shoppingcartItemService;
 
 	@GetMapping("/getCart/{userName}")
 	public CartBillDto getCart(@PathVariable String userName) {
@@ -43,10 +43,5 @@ public class ShoppingCartController {
 			{
 				return shoppingcartItemService.checkout(userName);
 			}
-	@GetMapping("/pay")
-	public String pay()
-			{
-				return shoppingcartItemService.pay();
-			}
-
+	
 }

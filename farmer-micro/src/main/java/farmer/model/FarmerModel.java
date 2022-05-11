@@ -36,7 +36,7 @@ public class FarmerModel {
 	public long contact;
 	public String status;
 	@Id
-	@JsonIgnore
+//	@JsonIgnore
 	public String userName;
 	@JsonIgnore
 	public String password;

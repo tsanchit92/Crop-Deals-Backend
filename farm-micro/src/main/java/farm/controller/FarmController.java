@@ -24,7 +24,8 @@ import farm.model.Address;
 import farm.model.BankAccountDeatil;
 import farm.model.Crop;
 import farm.model.FarmModel;
-import farm.service.FarmService;
+import farm.model.OrderModel;
+import farm.serviceInterface.FarmServiceInterface;
 
 @CrossOrigin
 @RestController
@@ -33,7 +34,7 @@ public class FarmController {
 
 
 	@Autowired
-	public FarmService service;
+	public FarmServiceInterface service;
 
 	@GetMapping("/getAll")
 	public List<FarmModel> getAllFarm (){
@@ -52,7 +53,8 @@ public class FarmController {
 
 	@GetMapping("/getCrops")
 	public List<Crop> getFarmers() {
-		return service.getFarmers();
+//		throw new RuntimeException();
+				return service.getFarmers();
 	}
 
 	@DeleteMapping("/removeFarm/{userName}")
@@ -80,6 +82,11 @@ public class FarmController {
 	public List<OrderDto> Orders()
 	{
 		return service.getOrders();
+	}
+	@GetMapping("/getFarmOrders/{userName}")
+	public List<OrderModel> farmOrders(@PathVariable String userName)
+	{
+		return service.getFarmOrders(userName);
 	}
 	@GetMapping("/getAddress/{id}")
 	public Address getAddress(@PathVariable int id)

@@ -2,11 +2,14 @@ package com.cotroller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +26,7 @@ import com.repository.LoginRepository;
 import com.util.JwtUtil;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 public class LoginController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -33,6 +36,9 @@ public class LoginController {
 	
 	@Autowired
 	LoginRepository repo;
+	
+	@Autowired
+	JwtUtil jwtUtil;
 
 	@Autowired
 	private JwtUtil jwtTokenUtil;
@@ -69,6 +75,41 @@ public class LoginController {
 		  
 		  return ResponseEntity.ok(new AuthenticationResponse(token));
 		   
+	}
+	@GetMapping("/validate")
+	public Boolean validateToken(ServerHttpRequest request)
+	{
+		String authorizationHeader = request.getHeaders().getFirst("Authorization");
+		 
+			String username = null;
+			String jwt = null;
+
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+				jwt = authorizationHeader.substring("Bearer ".length());
+				username = jwtUtil.extractUsername(jwt);
+			}
+
+			if (username != null) {
+
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+				if (jwtUtil.validateToken(jwt, userDetails)) {
+
+//					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+//							userDetails, null, userDetails.getAuthorities());
+//					usernamePasswordAuthenticationToken
+//							.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+					
+					return true;
+					
+					
+				}
+				else 
+					return false;
+			}
+			else
+				return false;
 	}
 
 }

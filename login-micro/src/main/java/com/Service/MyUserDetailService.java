@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.model.UserLogin;
 import com.repository.LoginRepository;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class MyUserDetailService implements UserDetailsService {
 
@@ -25,7 +27,7 @@ public class MyUserDetailService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
 		UserLogin user = repo.findById(userName).get();
-		System.out.println(user.getPassword());
+		log.info(user.getPassword());
 				/*.orElseThrow(() -> new UsernameNotFoundException("Not Found: 	" + userName));*/
 
 		List<SimpleGrantedAuthority> roles = Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new)
@@ -33,5 +35,6 @@ public class MyUserDetailService implements UserDetailsService {
 		return new User(user.getUserName(), user.getPassword(), roles);
 
 	}
+	
 
 }

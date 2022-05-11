@@ -15,4 +15,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 	@Query(value = "select * from cart_item c where c.user_name=:dealer",nativeQuery = true)
 	List<CartItem> getCartItem(@Param("dealer") String dealer);
 	
+
+	@Query(value ="select * from cart_item c where c.user_name= null",nativeQuery = true)
+	void deleteDealerCart();
+	
 }

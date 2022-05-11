@@ -16,13 +16,13 @@ import farmer.repopsitory.AddressRepository;
 import farmer.repopsitory.BankAccountRepository;
 import farmer.repopsitory.CropRespository;
 import farmer.repopsitory.FarmerRepository;
-import farmer.service.FarmerService;
+import farmer.serviceInterface.FarmerServiceInterface;
 
 @SpringBootTest
 class FarmerMicroApplicationTests {
 
 	@Autowired
-	FarmerService farmerService;
+	FarmerServiceInterface farmerService;
 
 	@Autowired
 	CropRespository cropRepository;

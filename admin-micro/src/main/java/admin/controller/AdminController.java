@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import admin.model.FarmModel;
 import admin.model.FarmerModel;
 import admin.model.OrderModel;
-import admin.service.AdminService;
+import admin.serviceInterface.AdminServiceInterface;
 @CrossOrigin
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
 	@Autowired
-	public AdminService adminService;
+	public AdminServiceInterface adminService;
 
 	@DeleteMapping("/deleteFarmer/{userName}")
 	public void deleteFarmer(@PathVariable String userName) {
@@ -44,6 +44,7 @@ public class AdminController {
 	@GetMapping("/getAllOrders")
 	public List<OrderModel> getAllOrders()
 	{
+//		throw new AdminException("admin not found",HttpStatus.BAD_REQUEST);
 		return adminService.getAllOrders();
 	}
 }

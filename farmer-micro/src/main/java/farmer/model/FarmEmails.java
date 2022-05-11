@@ -25,8 +25,7 @@ public class FarmEmails {
 	public String Emails;
 	
 	public FarmEmails(String emails) {
-		super();
-		Emails = emails;
+		this.Emails = emails;
 	}
 	
 	

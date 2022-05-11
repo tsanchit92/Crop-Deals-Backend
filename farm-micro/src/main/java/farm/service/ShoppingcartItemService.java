@@ -23,10 +23,11 @@ import farm.model.OrderModel;
 import farm.repository.CartItemRepository;
 import farm.repository.FarmRepository;
 import farm.repository.OrderRepository;
+import farm.serviceInterface.ShoppingCartServiceInterface;
 import reactor.core.publisher.Mono;
 
 @Service
-public class ShoppingcartItemService {
+public class ShoppingcartItemService implements ShoppingCartServiceInterface {
 
 	@Autowired
 	WebClient.Builder webCient;
@@ -40,6 +41,7 @@ public class ShoppingcartItemService {
 	@Autowired
 	public FarmRepository farmRepository;
 
+	@Override
 	public boolean addItems(CartItemDto cartItemDto) {
 
 		int itemCost = cartItemDto.getQuantity() * cartItemDto.getPrice();
@@ -60,6 +62,7 @@ public class ShoppingcartItemService {
 
 	}
 
+	@Override
 	public boolean removeItems(CartItemDto cartItemDto) {
 		FarmModel farmModel = farmRepository.findById(cartItemDto.getUserName()).get();
 
@@ -75,6 +78,7 @@ public class ShoppingcartItemService {
 		return false;
 	}
 
+	@Override
 	public CartBillDto listCartItem(String userName) {
 
 		FarmModel farmModel = farmRepository.findById(userName).get();
@@ -83,43 +87,45 @@ public class ShoppingcartItemService {
 
 	}
 
+	@Override
 	public Boolean checkout(String userName) {
-		
-		
-		HashMap<Integer,Integer> CropIds=new HashMap<>();
-		FarmModel farmModel=farmRepository.findById(userName).get();
-		for(CartItem icart : farmModel.getCartItems())
-		{
+
+		HashMap<Integer, Integer> CropIds = new HashMap<>();
+		FarmModel farmModel = farmRepository.findById(userName).get();
+		for (CartItem icart : farmModel.getCartItems()) {
 			CropIds.put(icart.getCropId(), icart.getQuantity());
-			OrderModel order =new OrderModel(new Date(System.currentTimeMillis()),icart.getCropName(),icart.getCropType(),
-					icart.getCropPrice(),icart.getCropId(),icart.getQuantity(),icart.getCost(),farmModel);
+			OrderModel order = new OrderModel(new Date(System.currentTimeMillis()), icart.getCropName(),
+					icart.getCropType(), icart.getCropPrice(), icart.getCropId(), icart.getQuantity(), icart.getCost(),
+					farmModel);
 			farmModel.getOrder().add(order);
 			orderRepo.save(order);
 			farmRepository.save(farmModel);
 		}
-		webCient.build().post().uri("http://Farmer/farmer/quantityManagement")
-		.header(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE)
-		.body(Mono.just(CropIds),HashMap.class)
-		.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(boolean.class).block();
+		webCient.build().post().uri("http://farmer/farmer/quantityManagement")
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.body(Mono.just(CropIds), HashMap.class).accept(MediaType.APPLICATION_JSON).retrieve()
+				.bodyToMono(boolean.class).block();
 		
+
 		List<CartItem> items = cartItemRepository.getCartItem(userName);
-		ListIterator<CartItem>itr=items.listIterator();
-		while(itr.hasNext())
-		{
-			CartItem c =itr.next();
+		ListIterator<CartItem> itr = items.listIterator();
+		while (itr.hasNext()) {
+			CartItem c = itr.next();
 			c.setFarmModel(null);
-			cartItemRepository.deleteById(c.getId());
+			/*
+			 * var i = c.getId(); cartItemRepository.delete(c);
+			 */
 		}
+		/* cartItemRepository.deleteDealerCart(); */
+
 		farmModel.setCartItems(new ArrayList<>());
+		farmModel.setTotalBill(0);
 		farmRepository.save(farmModel);
 		
+
 		return true;
 	}
 
-	public String pay() {
-		return webCient.build().get().uri("http://localhost:8080").accept(MediaType.TEXT_HTML).retrieve()
-				.bodyToMono(String.class).block();
 
-	}
 
 }

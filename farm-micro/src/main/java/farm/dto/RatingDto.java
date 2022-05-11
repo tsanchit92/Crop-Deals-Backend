@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RatingDto {
 	
-	String userId;
+	int cropId;
 	int rating;
 
 }
