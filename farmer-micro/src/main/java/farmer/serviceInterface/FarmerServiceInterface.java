@@ -13,6 +13,7 @@ import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
 import farmer.model.FarmerModel;
+import farmer.model.SoldCrops;
 
 public interface FarmerServiceInterface {
 
@@ -45,5 +46,7 @@ public interface FarmerServiceInterface {
 	List<FarmerModel> getFarmers();
 
 	Boolean validateToken(ServerHttpRequest request);
+
+	List<SoldCrops> getsoldCrops(String userName, ServerHttpRequest request);
 
 }

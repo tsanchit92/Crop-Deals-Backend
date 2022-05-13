@@ -19,17 +19,20 @@ import farmer.dto.CropDto;
 import farmer.dto.EditDto;
 import farmer.dto.FarmerDto;
 import farmer.dto.RatingDto;
+import farmer.exception.FarmerException;
 import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
 import farmer.model.FarmEmails;
 import farmer.model.FarmerModel;
+import farmer.model.SoldCrops;
 import farmer.model.UserLogin;
 import farmer.repopsitory.AddressRepository;
 import farmer.repopsitory.BankAccountRepository;
 import farmer.repopsitory.CropRespository;
 import farmer.repopsitory.FarmEmailRepository;
 import farmer.repopsitory.FarmerRepository;
+import farmer.repopsitory.SoldCropsRepo;
 import farmer.serviceInterface.FarmerServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -58,10 +61,12 @@ public class FarmerService implements FarmerServiceInterface {
 	private JavaMailSender javaMailSender;
 	@Autowired
 	private FarmEmailRepository emailRepo;
+	@Autowired
+	private SoldCropsRepo soldRepo;
 
 	@Override
-	public boolean register(FarmerDto farmerDto) {
-
+	public boolean register(FarmerDto farmerDto) throws FarmerException{
+			try {
 		Address address = new Address(farmerDto.getHouseNo(), farmerDto.getLocality(), farmerDto.getTown(),
 				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode(), null);
 		addressRepo.save(address);
@@ -70,7 +75,7 @@ public class FarmerService implements FarmerServiceInterface {
 				farmerDto.getBankAccountNo(), farmerDto.getIfscCode());
 		bankRepo.save(bankAccountDeatil);
 
-		Crop crops = new Crop(farmerDto.getId(), farmerDto.getCropName(), farmerDto.getCropType(),
+		Crop crops = new Crop(farmerDto.getCropName(), farmerDto.getCropType(),
 				farmerDto.getCropQuantity(), farmerDto.getPrice(), null);
 		cropRepo.save(crops);
 
@@ -84,6 +89,10 @@ public class FarmerService implements FarmerServiceInterface {
 		cropRepo.save(crops);
 		addressRepo.save(address);
 		repo.save(farmerModel);
+			}
+			catch (FarmerException farmerException) {
+				log.info("userName already taken");
+			}
 
 		UserLogin login = new UserLogin(farmerDto.getUserName(), farmerDto.getPassword(), "farmer");
 		rabbitTemplate.convertAndSend(exchange, routingkey, login);
@@ -120,7 +129,7 @@ public class FarmerService implements FarmerServiceInterface {
 			}
 				
 				FarmerModel farmer = repo.getById(crop.getUserName());
-				Crop crops = new Crop(crop.getId(), crop.getCropName(), crop.getCropType(), crop.getCropQuantity(),
+				Crop crops = new Crop(crop.getCropName(), crop.getCropType(), crop.getCropQuantity(),
 						crop.getPrice(), farmer);
 				cropRepo.save(crops);
 				farmer.getCrops().add(crops);
@@ -241,7 +250,20 @@ public class FarmerService implements FarmerServiceInterface {
 			Map.Entry<Integer, Integer> entry = itr.next();
 
 			Crop crop = cropRepo.findById(entry.getKey()).get();
+			FarmerModel farmerModel =repo.findById(crop.getFarmer().getUserName()).get();
+			/*
+			 * // FarmerModel farmerModel
+			 * =repo.findById(crop.getFarmer().getUserName()).orElseThrow( // ()-> new
+			 * FarmerException() );
+			 */
 			crop.setCropQuantity(crop.getCropQuantity() - entry.getValue());
+			int cost = entry.getValue()*crop.getPrice();
+			SoldCrops soldCrops=new SoldCrops(entry.getValue(),crop.getCropName(),crop.getCropType(),crop.getPrice(),cost,farmerModel);
+			List<SoldCrops> list=new ArrayList<>();
+			list.add(soldCrops);
+			farmerModel.setSoldCrops(list);
+			repo.save(farmerModel);
+//			soldRepo.save(soldCrops);
 			cropRepo.save(crop);
 
 		}
@@ -293,6 +315,20 @@ public class FarmerService implements FarmerServiceInterface {
 
 		return repo.findAll();
 	}
+	public List<SoldCrops> getsoldCrops(String userName, ServerHttpRequest request)
+	{
+		if (validateToken(request)) {
+		FarmerModel farmerModel=repo.findById(userName).orElseThrow(
+				() -> new FarmerException()
+				);
+		return farmerModel.getSoldCrops();
+	
+	} else
+		log.info("invalid token provided");
+		throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+}
+
+
 
 	@Override
 	public Boolean validateToken(ServerHttpRequest request) {

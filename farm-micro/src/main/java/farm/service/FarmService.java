@@ -7,6 +7,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,6 +21,7 @@ import farm.com.util.JwtUtil;
 import farm.dto.EditDto;
 import farm.dto.OrderDto;
 import farm.dto.RatingDto;
+import farm.exception.FarmException;
 import farm.model.Address;
 import farm.model.BankAccountDeatil;
 import farm.model.Crop;
@@ -96,7 +98,8 @@ public class FarmService implements FarmServiceInterface {
 	public void removeDealer(String userName) {
 		// code writte that would be called by admin microservice when he wants to
 		// deacticate dealer.
-		FarmModel farmModel = farmRepo.findById(userName).get();
+		FarmModel farmModel = farmRepo.findById(userName)
+		.orElseThrow( ()->  new FarmException("Dealer not found",HttpStatus.BAD_REQUEST));
 		farmModel.setStatus("Inactive");
 		farmRepo.save(farmModel);
 	}
@@ -105,7 +108,8 @@ public class FarmService implements FarmServiceInterface {
 	public boolean editProfile(EditDto farm) {
 
 		//called by the dealer it self to edit his feeded data
-		FarmModel farmModel = farmRepo.findById(farm.getUserName()).get();
+		FarmModel farmModel = farmRepo.findById(farm.getUserName())
+		.orElseThrow( ()->  new FarmException("Dealer not found",HttpStatus.BAD_REQUEST));
 		farmModel.setName(farm.getName());
 		farmModel.setUserName(farm.getUserName());
 		farmModel.setPassword(farm.getPassword());
@@ -146,7 +150,8 @@ public class FarmService implements FarmServiceInterface {
 	@Override
 	public FarmModel getDetails(String userName) {
 		//called from ui to prefill data to make easy for dealer to edit it
-		FarmModel farmModel = farmRepo.findById(userName).get();
+		FarmModel farmModel = farmRepo.findById(userName)
+	.orElseThrow( ()->  new FarmException("Dealer not found",HttpStatus.BAD_REQUEST));
 		return farmModel;
 
 	}
@@ -173,7 +178,7 @@ public class FarmService implements FarmServiceInterface {
 	public Address getAddress(int id) {
 
 		return webClientBuilder.build().get().uri("http://Farmer/farmer/getAddress/" + id)
-				.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(Address.class).block();
+		.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(Address.class).block();
 
 	}
 
@@ -187,7 +192,8 @@ public class FarmService implements FarmServiceInterface {
 	@Override
 	public List<OrderModel> getFarmOrders(String userName)
 	{
-		FarmModel farmModel =farmRepo.findById(userName).get();
+		FarmModel farmModel =farmRepo.findById(userName)
+		.orElseThrow( ()->  new FarmException("Dealer not found",HttpStatus.BAD_REQUEST));
 		return farmModel.getOrder();
 	}
 

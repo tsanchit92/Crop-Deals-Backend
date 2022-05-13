@@ -27,6 +27,7 @@ import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
 import farmer.model.Crop;
 import farmer.model.FarmerModel;
+import farmer.model.SoldCrops;
 import farmer.serviceInterface.FarmerServiceInterface;
 
 @RestController
@@ -116,4 +117,10 @@ public class FarmerController {
 	{
 		return farmerService.getFarmerCrops(userName, request);
 	}
+	@GetMapping("/getSoldCrops/{userName}")
+	public List<SoldCrops> getSoldCrops(@PathVariable String userName,ServerHttpRequest request)
+	{
+		return farmerService.getsoldCrops(userName,request);
+	}
+	
 }

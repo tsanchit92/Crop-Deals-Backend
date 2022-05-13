@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import admin.com.util.JwtUtil;
+import admin.exception.AdminException;
 import admin.model.AdminModel;
 import admin.model.FarmModel;
 import admin.model.FarmerModel;
@@ -32,11 +34,12 @@ public class AdminService implements AdminServiceInterface {
 	private AdminRepository adminrepo;
 
 	@Override
-	public Boolean deleteFarm(String userName) {
+	public Boolean deleteFarm(String userName)  {
 		
 		log.info(userName);
 			return webClient.delete().uri("/farm/removeFarm/" + userName)
 					.retrieve().bodyToMono(Boolean.class).block();
+	
 	}
 
 	@Override
@@ -91,7 +94,8 @@ public class AdminService implements AdminServiceInterface {
 
 		if (username != null) {
 
-			AdminModel farmModel = adminrepo.findById(username).get();
+			AdminModel farmModel = adminrepo.findById(username)
+	.orElseThrow( ()->  new AdminException("admin not found",HttpStatus.BAD_REQUEST));
 			if (farmModel != null) {
 				if (jwtUtil.validateToken(jwt, farmModel.getUserName())) {
 

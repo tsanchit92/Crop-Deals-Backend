@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,15 +16,15 @@ import com.google.common.net.HttpHeaders;
 import farm.dto.CartBillDto;
 import farm.dto.CartItemDto;
 import farm.model.CartItem;
-import farm.model.Crop;
 import farm.model.FarmModel;
 import farm.model.OrderModel;
 import farm.repository.CartItemRepository;
 import farm.repository.FarmRepository;
 import farm.repository.OrderRepository;
 import farm.serviceInterface.ShoppingCartServiceInterface;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
+@Slf4j
 @Service
 public class ShoppingcartItemService implements ShoppingCartServiceInterface {
 
@@ -97,8 +96,8 @@ public class ShoppingcartItemService implements ShoppingCartServiceInterface {
 			OrderModel order = new OrderModel(new Date(System.currentTimeMillis()), icart.getCropName(),
 					icart.getCropType(), icart.getCropPrice(), icart.getCropId(), icart.getQuantity(), icart.getCost(),
 					farmModel);
-			farmModel.getOrder().add(order);
 			orderRepo.save(order);
+			farmModel.getOrder().add(order);
 			farmRepository.save(farmModel);
 		}
 		webCient.build().post().uri("http://farmer/farmer/quantityManagement")
@@ -106,12 +105,12 @@ public class ShoppingcartItemService implements ShoppingCartServiceInterface {
 				.body(Mono.just(CropIds), HashMap.class).accept(MediaType.APPLICATION_JSON).retrieve()
 				.bodyToMono(boolean.class).block();
 		
-
+		
 		List<CartItem> items = cartItemRepository.getCartItem(userName);
 		ListIterator<CartItem> itr = items.listIterator();
 		while (itr.hasNext()) {
 			CartItem c = itr.next();
-			c.setFarmModel(null);
+			c.setFarmModel(null);	
 			/*
 			 * var i = c.getId(); cartItemRepository.delete(c);
 			 */

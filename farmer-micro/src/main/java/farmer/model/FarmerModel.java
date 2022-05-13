@@ -30,6 +30,21 @@ import lombok.Setter;
 @Table(name ="farmer")
 public class FarmerModel {
 	
+	public FarmerModel(String firstName, String lastName, String email, long contact, String status, String userName,
+			String password, Address address, List<Crop> crops, BankAccountDeatil bankAccountDeatil, int rating) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.contact = contact;
+		this.status = status;
+		this.userName = userName;
+		this.password = password;
+		this.address = address;
+		this.crops = crops;
+		this.bankAccountDeatil = bankAccountDeatil;
+		this.rating = rating;
+	}
 	public String firstName;
 	public String lastName;
 	public String email;
@@ -46,7 +61,7 @@ public class FarmerModel {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public Address address;
 	@JsonIgnore
-	@OneToMany(mappedBy = "farmer",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "farmer",cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.DETACH,CascadeType.REFRESH},fetch = FetchType.LAZY)
 	public List<Crop> crops=new ArrayList<>();
 	/* @JsonIgnore */
 	@OneToOne(cascade=CascadeType.ALL)
@@ -54,6 +69,8 @@ public class FarmerModel {
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public BankAccountDeatil bankAccountDeatil;
 	public int rating;
+	@OneToMany(mappedBy = "farmer",cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.DETACH,CascadeType.REFRESH},fetch = FetchType.LAZY)
+	public List<SoldCrops> soldCrops=new ArrayList<>();
 	
 	 
 	 

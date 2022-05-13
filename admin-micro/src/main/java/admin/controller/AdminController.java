@@ -44,7 +44,7 @@ public class AdminController {
 	@GetMapping("/getAllOrders")
 	public List<OrderModel> getAllOrders()
 	{
-//		throw new AdminException("admin not found",HttpStatus.BAD_REQUEST);
+		
 		return adminService.getAllOrders();
 	}
 }
