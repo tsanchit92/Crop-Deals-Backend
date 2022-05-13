@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import farmer.model.Address;
 import farmer.model.BankAccountDeatil;
@@ -21,19 +23,19 @@ import farmer.serviceInterface.FarmerServiceInterface;
 @SpringBootTest
 class FarmerMicroApplicationTests {
 
-	@Autowired
+	@Mock
 	FarmerServiceInterface farmerService;
 
-	@Autowired
+	@Mock
 	CropRespository cropRepository;
 	
-	@Autowired
+	@Mock
 	AddressRepository addrepo;
 	
-	@Autowired
+	@Mock
 	BankAccountRepository bankRepo;
 
-	@Autowired
+	@Mock
 	FarmerRepository repo;
 
 	@Test
@@ -46,21 +48,9 @@ class FarmerMicroApplicationTests {
 		assertEquals(cropRepository.findAll(), f);
 	}
 	
-	@Test
-	public void Footest1(String id) throws Exception
-	{
-		FarmerModel farmerModel = repo.findById(id).get();
-		Address address = farmerModel.getAddress();
-		assertEquals(farmerModel.getAddress(), address);
-	}
+
 	
-	@Test
-	public void FooTest2(String id)
-	{
-		FarmerModel farmerModel = repo.findById(id).get();
-		BankAccountDeatil bankDetail = farmerModel.getBankAccountDeatil();
-		assertEquals(farmerModel.getBankAccountDeatil(), bankDetail);
-	}
+
 
 	
 

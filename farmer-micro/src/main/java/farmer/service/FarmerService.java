@@ -131,10 +131,12 @@ public class FarmerService implements FarmerServiceInterface {
 				FarmerModel farmer = repo.getById(crop.getUserName());
 				Crop crops = new Crop(crop.getCropName(), crop.getCropType(), crop.getCropQuantity(),
 						crop.getPrice(), farmer);
-				cropRepo.save(crops);
+				
 				farmer.getCrops().add(crops);
 				cropRepo.save(crops);
-
+				repo.save(farmer);
+				
+		
 			
 
 			return true;
@@ -259,11 +261,9 @@ public class FarmerService implements FarmerServiceInterface {
 			crop.setCropQuantity(crop.getCropQuantity() - entry.getValue());
 			int cost = entry.getValue()*crop.getPrice();
 			SoldCrops soldCrops=new SoldCrops(entry.getValue(),crop.getCropName(),crop.getCropType(),crop.getPrice(),cost,farmerModel);
-			List<SoldCrops> list=new ArrayList<>();
-			list.add(soldCrops);
-			farmerModel.setSoldCrops(list);
+//			farmerModel.getSoldCrops().add(soldCrops);
 			repo.save(farmerModel);
-//			soldRepo.save(soldCrops);
+			soldRepo.save(soldCrops);
 			cropRepo.save(crop);
 
 		}

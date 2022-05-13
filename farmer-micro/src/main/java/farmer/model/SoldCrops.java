@@ -2,6 +2,7 @@ package farmer.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public class SoldCrops {
 	public int cropPrice;
 	public int cost;
 	@JsonIgnore
-	@ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH})
+	@ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH},fetch = FetchType.LAZY)
 	@JoinColumn(name = "userName",referencedColumnName = "userName")
 	private FarmerModel farmer;
 	
