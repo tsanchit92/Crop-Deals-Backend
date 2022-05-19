@@ -66,6 +66,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public boolean register(FarmerDto farmerDto) throws FarmerException{
+		//used farmer dt for getting data from ui and then use set and get methods of different model clasess to set data up
 			try {
 		Address address = new Address(farmerDto.getHouseNo(), farmerDto.getLocality(), farmerDto.getTown(),
 				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode(), null);
@@ -93,11 +94,11 @@ public class FarmerService implements FarmerServiceInterface {
 			catch (FarmerException farmerException) {
 				log.info("userName already taken");
 			}
-
+//use rabbit mq sender option to send login credentials of farmer when he/she registered to the site 
 		UserLogin login = new UserLogin(farmerDto.getUserName(), farmerDto.getPassword(), "farmer");
 		rabbitTemplate.convertAndSend(exchange, routingkey, login);
 		log.info("Send msg = " + login);
-		
+		//used spring mail service fr sending mails to all registered dealers to check new crops on our site.
 		SimpleMailMessage msg = new SimpleMailMessage();
 		List<FarmEmails> emails = emailRepo.findAll();
 		for (FarmEmails i : emails) 
@@ -112,11 +113,12 @@ public class FarmerService implements FarmerServiceInterface {
 		return true;
 
 	}
-
+//this post method is created for a farmer to add crops after registering
+//themselves with one crop and also here have use validate token method validate jwt token passed within headers
 	@Override
 	public boolean addCrop(CropDto crop, ServerHttpRequest request) {
 		if (validateToken(request)) {
-			
+			//send mails to the registered dealers to checkut nw crops.
 			SimpleMailMessage msg = new SimpleMailMessage();
 			List<FarmEmails> emails = emailRepo.findAll();
 			for (FarmEmails i : emails) 
@@ -147,7 +149,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public boolean removeCrop(String userName, Integer id, ServerHttpRequest request) {
-
+//use this delete method to remove crop from the list of farmer if he wants to
 		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			for (Crop crop : farmerModel.getCrops()) {
@@ -168,6 +170,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public List<Crop> getFarmerCrops() {
+		//use this method here so that it can be called using web client to get list of registered crops from farmer service.
 		List<Crop> finalCrop = new ArrayList<>();
 		List<Crop> crop = cropRepo.findAll();
 		for (Crop i : crop) {
@@ -181,7 +184,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public void removeFamer(String userName) {
-
+//used this method to provide an option to admin if he want to deactivate any user.
 		FarmerModel farmerModel = repo.findById(userName).get();
 		farmerModel.setStatus("Inactive");
 		repo.save(farmerModel);
@@ -190,7 +193,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public boolean rateFarmer(RatingDto dto) {
-
+//used this to provide rting facility to dealers to rate farmers.
 		FarmerModel farmer;
 		Crop crop = cropRepo.findById(dto.getCropId()).get();
 		farmer = repo.findById(crop.getFarmer().getUserName()).get();
@@ -202,6 +205,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public boolean editProfile(EditDto dto, ServerHttpRequest request) {
+//used this to provide editing profile facility to farmers .
 		if (validateToken(request)) {
 			FarmerModel farmer = new FarmerModel();
 			farmer = repo.findById(dto.getUserName()).get();
@@ -232,7 +236,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public Address getAddress(int id) {
-
+//called by dealer to gte address of farmer of a particular crop.
 		Crop crop = cropRepo.findById(id).get();
 		return crop.getFarmer().getAddress();
 
@@ -247,6 +251,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public Boolean quantityManagement(HashMap<Integer, Integer> CropIds) {
+// this method is called parallely once the success payment is done to deduct the quantity of crops buyed and also to empty cart and it also saves sold orders for farmers . 
 		Iterator<Map.Entry<Integer, Integer>> itr = CropIds.entrySet().iterator();
 		while (itr.hasNext()) {
 			Map.Entry<Integer, Integer> entry = itr.next();
@@ -272,7 +277,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public Boolean saveFarmEmail(String Emails) {
-
+//this is used to save the emails of newly registered dealers on site so they can be emailed.
 		FarmEmails farmEmails = new FarmEmails(Emails);
 		emailRepo.save(farmEmails);
 
@@ -281,6 +286,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public FarmerDto getFarmerDetails(String userName, ServerHttpRequest request) {
+		//this method isused to get farmer details for editing purpose
 		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			FarmerDto farmerDto = new FarmerDto(farmerModel.getFirstName(), farmerModel.getLastName(),
@@ -301,6 +307,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public List<Crop> getFarmerCrops(String userName, ServerHttpRequest request) {
+		//to get crops registerd by a particular farmer .
 		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			return farmerModel.getCrops();
@@ -312,11 +319,12 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public List<FarmerModel> getFarmers() {
-
+//called by admin to get list of registered farmers on site.
 		return repo.findAll();
 	}
 	public List<SoldCrops> getsoldCrops(String userName, ServerHttpRequest request)
 	{
+		//for getiing info about particaule farmer crops that are sold till now 
 		if (validateToken(request)) {
 		FarmerModel farmerModel=repo.findById(userName).orElseThrow(
 				() -> new FarmerException()
@@ -332,6 +340,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public Boolean validateToken(ServerHttpRequest request) {
+		//used to validate token passed within headres and this method is called where we need to secure endpoints.
 		String authorizationHeader = request.getHeaders().getFirst("Authorization");
 
 		String username = null;

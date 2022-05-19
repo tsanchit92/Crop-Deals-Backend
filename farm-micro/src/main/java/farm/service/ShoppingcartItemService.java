@@ -91,10 +91,11 @@ public class ShoppingcartItemService implements ShoppingCartServiceInterface {
 
 		HashMap<Integer, Integer> CropIds = new HashMap<>();
 		FarmModel farmModel = farmRepository.findById(userName).get();
-		for (CartItem icart : farmModel.getCartItems()) {
-			CropIds.put(icart.getCropId(), icart.getQuantity());
-			OrderModel order = new OrderModel(new Date(System.currentTimeMillis()), icart.getCropName(),
-					icart.getCropType(), icart.getCropPrice(), icart.getCropId(), icart.getQuantity(), icart.getCost(),
+		List<CartItem> carts= farmModel.getCartItems();
+		for (Integer i=0;i<carts.size();i++) {
+			CropIds.put(carts.get(i).getCropId(),carts.get(i).getQuantity());
+			OrderModel order = new OrderModel(new Date(System.currentTimeMillis()), carts.get(i).getCropName(),
+					carts.get(i).getCropType(), carts.get(i).getCropPrice(), carts.get(i).getCropId(), carts.get(i).getQuantity(), carts.get(i).getCost(),
 					farmModel);
 			orderRepo.save(order);
 			farmModel.getOrder().add(order);

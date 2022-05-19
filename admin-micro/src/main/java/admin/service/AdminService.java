@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class AdminService implements AdminServiceInterface {
-
+//setting vase url for web client 
 	WebClient webClient = WebClient.create("http://localhost:11000");
 	WebClient webClient2 = WebClient.create("http://localhost:8000");
 
@@ -35,7 +35,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public Boolean deleteFarm(String userName)  {
-		
+//callinig method of farm service for deactivating dealer		
 		log.info(userName);
 			return webClient.delete().uri("/farm/removeFarm/" + userName)
 					.retrieve().bodyToMono(Boolean.class).block();
@@ -44,7 +44,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public Boolean deleteFarmer(String userName) {
-		
+		//callinig method of farmer service for deactivating farmer	
 		log.info(userName);
 			return webClient2.delete().uri("/farmer/deletefarmer/" + userName).retrieve().bodyToMono(Boolean.class)
 					.block();
@@ -52,7 +52,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public List<FarmerModel> getAllFarmers() {
-		
+		//callinig method of farmer service for getting list all  farmer	
 			return webClient2.get().uri("/farmer/getAllFarmer").accept(MediaType.APPLICATION_JSON).retrieve()
 					.bodyToMono(new ParameterizedTypeReference<List<FarmerModel>>() {
 					}).block();
@@ -61,7 +61,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public List<FarmModel> getAllFarm() {
-	
+		//callinig method of farm service for getting list of all  dealer	
 			return webClient.get().uri("/farm/getAll").accept(MediaType.APPLICATION_JSON).retrieve()
 					.bodyToMono(new ParameterizedTypeReference<List<FarmModel>>() {
 					}).block();
@@ -70,7 +70,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public List<OrderModel> getAllOrders() {
-
+		//callinig method of farm service for getting list of all  order placed till now using this web site	
 			return webClient.get().uri("/farm/getOrders").accept(MediaType.APPLICATION_JSON).retrieve()
 					.bodyToMono(new ParameterizedTypeReference<List<OrderModel>>() {
 					}).block();
@@ -79,7 +79,7 @@ public class AdminService implements AdminServiceInterface {
 
 	@Override
 	public Boolean validateToken(ServerHttpRequest request) {
-
+//method for validating token
 			log.info("validating token");
 		String authorizationHeader = request.getHeaders().getFirst("Authorization");
 

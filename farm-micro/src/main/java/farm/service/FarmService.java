@@ -144,6 +144,7 @@ public class FarmService implements FarmServiceInterface {
 		msg.setText("Hello World \n Spring Boot Email");
 
 		javaMailSender.send(msg);
+		log.info("mail sent successfully");
 
 	}
 
@@ -164,6 +165,7 @@ public class FarmService implements FarmServiceInterface {
 
 	@Override
 	public List<OrderDto> getOrders() {
+		
 		List<OrderModel> orders = orderRepo.findAll();
 		List<OrderDto> ordersDto = new ArrayList<>();
 		for (OrderModel i : orders) {
@@ -176,7 +178,7 @@ public class FarmService implements FarmServiceInterface {
 
 	@Override
 	public Address getAddress(int id) {
-
+//used to get address of farner by calling get address endpoint of farmer ervice
 		return webClientBuilder.build().get().uri("http://Farmer/farmer/getAddress/" + id)
 		.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(Address.class).block();
 
@@ -191,6 +193,7 @@ public class FarmService implements FarmServiceInterface {
 	
 	@Override
 	public List<OrderModel> getFarmOrders(String userName)
+	//used to get all orders placed by the dealer till now 
 	{
 		FarmModel farmModel =farmRepo.findById(userName)
 		.orElseThrow( ()->  new FarmException("Dealer not found",HttpStatus.BAD_REQUEST));
@@ -199,7 +202,7 @@ public class FarmService implements FarmServiceInterface {
 
 	@Override
 	public Boolean validateToken(ServerHttpRequest request) {
-
+//used to validate token passed within headers.
 		String authorizationHeader = request.getHeaders().getFirst("Authorization");
 
 		String username = null;
