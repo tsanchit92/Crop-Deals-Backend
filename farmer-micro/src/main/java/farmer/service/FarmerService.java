@@ -95,7 +95,7 @@ public class FarmerService implements FarmerServiceInterface {
 				log.info("userName already taken");
 			}
 //use rabbit mq sender option to send login credentials of farmer when he/she registered to the site 
-		UserLogin login = new UserLogin(farmerDto.getUserName(), farmerDto.getPassword(), "farmer");
+		UserLogin login = new UserLogin(farmerDto.getUserName(), farmerDto.getPassword(), "farmer","Active");
 		rabbitTemplate.convertAndSend(exchange, routingkey, login);
 		log.info("Send msg = " + login);
 		//used spring mail service fr sending mails to all registered dealers to check new crops on our site.

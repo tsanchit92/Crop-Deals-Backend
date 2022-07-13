@@ -15,5 +15,5 @@ public class UserLogin {
 	private String userName;
 	private String password;
 	private String roles;
-
+	private String Status;
 }

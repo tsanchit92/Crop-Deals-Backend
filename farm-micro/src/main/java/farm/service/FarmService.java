@@ -77,7 +77,7 @@ public class FarmService implements FarmServiceInterface {
 
 
 		// sending data to login microservice having userName password and role with it
-		UserLogin login = new UserLogin(farmModel.getUserName(), farmModel.getPassword(), "dealer");
+		UserLogin login = new UserLogin(farmModel.getUserName(), farmModel.getPassword(), "dealer","Active");
 		rabbitTemplate.convertAndSend(exchange, routingkey, login);
 		log.info("Send msg = " + login);
 

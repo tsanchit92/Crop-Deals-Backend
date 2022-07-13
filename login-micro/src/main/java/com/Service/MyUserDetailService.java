@@ -25,11 +25,11 @@ public class MyUserDetailService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-//matching the credentials passed to the credentials saved if passed the right username .
-		UserLogin user = repo.findById(userName).get();
+		//matching the credentials passed to the credentials saved if passed the right username .
+		UserLogin user = repo.findById(userName)
+				.orElseThrow(()-> new UsernameNotFoundException("No user found with userName"+userName));
 		log.info(user.getPassword());
-				/*.orElseThrow(() -> new UsernameNotFoundException("Not Found: 	" + userName));*/
-
+				
 		List<SimpleGrantedAuthority> roles = Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 		log.info("Crerdentials confirmed now generting token ");

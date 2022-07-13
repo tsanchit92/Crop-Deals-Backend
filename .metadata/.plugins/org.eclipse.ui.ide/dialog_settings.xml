@@ -50,7 +50,10 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="C:\Users\Sanchit Tripathi\OneDrive - Lovely Professional University\Desktop\Crop-Deals1.0\project"/>
 			<item value="C:\Users\Sanchit Tripathi\Downloads\login-micro"/>
 		</list>
+	</section>
+	<section name="NewWizardAction">
 	</section>
 </section>
