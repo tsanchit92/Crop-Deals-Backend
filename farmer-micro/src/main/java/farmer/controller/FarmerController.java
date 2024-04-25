@@ -62,13 +62,13 @@ public class FarmerController {
 	}
 
 	@PostMapping("/addCrop")
-	public boolean addCrop(@RequestBody CropDto crop) {
-		return farmerService.addCrop(crop);
+	public boolean addCrop(@RequestBody CropDto crop,ServerHttpRequest request) {
+		return farmerService.addCrop(crop,request);
 	}
 
 	@DeleteMapping("/removeCrop/{userName}/{id}")
-	public Boolean removeCrop(@PathVariable String userName ,@PathVariable Integer id) {
-		return farmerService.removeCrop(userName,id);
+	public Boolean removeCrop(@PathVariable String userName ,@PathVariable Integer id,ServerHttpRequest request) {
+		return farmerService.removeCrop(userName,id,request);
 	}
 
 	@PostMapping("/rating")
@@ -77,9 +77,9 @@ public class FarmerController {
 	}
 	
 	@PutMapping("/editProfile")
-	public boolean editProfile(@RequestBody EditDto dto)
+	public boolean editProfile(@RequestBody EditDto dto,ServerHttpRequest request)
 	{
-		return farmerService.editProfile(dto);
+		return farmerService.editProfile(dto,request);
 	}
 	
 	@GetMapping("/getAddress/{id}")
@@ -107,20 +107,20 @@ public class FarmerController {
 	}
 	
 	@GetMapping("/getFarmerDetails/{userName}")
-	public FarmerDto getDetails(@PathVariable String userName)
+	public FarmerDto getDetails(@PathVariable String userName,ServerHttpRequest request)
 	{
-		return farmerService.getFarmerDetails(userName);
+		return farmerService.getFarmerDetails(userName,request);
 	}
 	
 	@GetMapping("/getFarmerCrops/{userName}")
-	public List<Crop> getFarmerCrops(@PathVariable  String userName)
+	public List<Crop> getFarmerCrops(@PathVariable  String userName,ServerHttpRequest request)
 	{
-		return farmerService.getFarmerCrops(userName);
+		return farmerService.getFarmerCrops(userName, request);
 	}
 	@GetMapping("/getSoldCrops/{userName}")
-	public List<SoldCrops> getSoldCrops(@PathVariable String userName)
+	public List<SoldCrops> getSoldCrops(@PathVariable String userName,ServerHttpRequest request)
 	{
-		return farmerService.getsoldCrops(userName);
+		return farmerService.getsoldCrops(userName,request);
 	}
 	
 }

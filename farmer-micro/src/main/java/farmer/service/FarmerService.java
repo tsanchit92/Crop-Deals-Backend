@@ -39,6 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FarmerService implements FarmerServiceInterface {
 	@Autowired
+	private JwtUtil jwtUtil;
+	@Autowired
 	private AmqpTemplate rabbitTemplate;
 
 	@Value("${tsanchit92.rabbitmq.exchange}")
@@ -64,7 +66,7 @@ public class FarmerService implements FarmerServiceInterface {
 
 	@Override
 	public boolean register(FarmerDto farmerDto) throws FarmerException{
-		//used farmer dto for getting data from ui and then use set and get methods of different model clasess to set data up
+		//used farmer dt for getting data from ui and then use set and get methods of different model clasess to set data up
 			try {
 		Address address = new Address(farmerDto.getHouseNo(), farmerDto.getLocality(), farmerDto.getTown(),
 				farmerDto.getDistrict(), farmerDto.getState(), farmerDto.getPostalCode(), null);
@@ -114,7 +116,8 @@ public class FarmerService implements FarmerServiceInterface {
 //this post method is created for a farmer to add crops after registering
 //themselves with one crop and also here have use validate token method validate jwt token passed within headers
 	@Override
-	public boolean addCrop(CropDto crop) {
+	public boolean addCrop(CropDto crop, ServerHttpRequest request) {
+		if (validateToken(request)) {
 			//send mails to the registered dealers to checkut nw crops.
 			SimpleMailMessage msg = new SimpleMailMessage();
 			List<FarmEmails> emails = emailRepo.findAll();
@@ -134,13 +137,20 @@ public class FarmerService implements FarmerServiceInterface {
 				farmer.getCrops().add(crops);
 				cropRepo.save(crops);
 				repo.save(farmer);
+				
+		
+			
 
 			return true;
-		}
+		} else
+			log.info("invalid token provided");
+			throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+	}
 
 	@Override
-	public boolean removeCrop(String userName, Integer id) {
-//use this deletes method to remove crop from the list of farmer if he wants to
+	public boolean removeCrop(String userName, Integer id, ServerHttpRequest request) {
+//use this delete method to remove crop from the list of farmer if he wants to
+		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			for (Crop crop : farmerModel.getCrops()) {
 				if (crop.getId() == id) {
@@ -153,7 +163,10 @@ public class FarmerService implements FarmerServiceInterface {
 			}
 
 			return true;
-		}
+		} else
+			log.info("invalid token provided");
+			throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+	}
 
 	@Override
 	public List<Crop> getFarmerCrops() {
@@ -191,8 +204,9 @@ public class FarmerService implements FarmerServiceInterface {
 	}
 
 	@Override
-	public boolean editProfile(EditDto dto) {
+	public boolean editProfile(EditDto dto, ServerHttpRequest request) {
 //used this to provide editing profile facility to farmers .
+		if (validateToken(request)) {
 			FarmerModel farmer = new FarmerModel();
 			farmer = repo.findById(dto.getUserName()).get();
 			farmer.setFirstName(dto.getFirstName());
@@ -215,7 +229,10 @@ public class FarmerService implements FarmerServiceInterface {
 			addressRepo.save(address);
 
 			return true;
-		}
+		} else
+			log.info("invalid token provided");
+			throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+	}
 
 	@Override
 	public Address getAddress(int id) {
@@ -268,8 +285,9 @@ public class FarmerService implements FarmerServiceInterface {
 	}
 
 	@Override
-	public FarmerDto getFarmerDetails(String userName) {
+	public FarmerDto getFarmerDetails(String userName, ServerHttpRequest request) {
 		//this method isused to get farmer details for editing purpose
+		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			FarmerDto farmerDto = new FarmerDto(farmerModel.getFirstName(), farmerModel.getLastName(),
 					farmerModel.getEmail(), farmerModel.getContact(), farmerModel.getUserName(),
@@ -282,28 +300,72 @@ public class FarmerService implements FarmerServiceInterface {
 					farmerModel.getBankAccountDeatil().getBankAccountHolderName());
 
 			return farmerDto;
-		}
+		} else
+			log.info("invalid token provided");
+			throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+	}
 
 	@Override
-	public List<Crop> getFarmerCrops(String userName) {
+	public List<Crop> getFarmerCrops(String userName, ServerHttpRequest request) {
 		//to get crops registerd by a particular farmer .
+		if (validateToken(request)) {
 			FarmerModel farmerModel = repo.findById(userName).get();
 			return farmerModel.getCrops();
-		}
+		} else
+			log.info("invalid token provided");
+			throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+
+	}
 
 	@Override
 	public List<FarmerModel> getFarmers() {
 //called by admin to get list of registered farmers on site.
 		return repo.findAll();
 	}
-	public List<SoldCrops> getsoldCrops(String userName)
+	public List<SoldCrops> getsoldCrops(String userName, ServerHttpRequest request)
 	{
-		//for getiing info about particaule farmer crops that are sold till now
+		//for getiing info about particaule farmer crops that are sold till now 
+		if (validateToken(request)) {
 		FarmerModel farmerModel=repo.findById(userName).orElseThrow(
 				() -> new FarmerException()
 				);
 		return farmerModel.getSoldCrops();
 	
+	} else
+		log.info("invalid token provided");
+		throw new TokenValidationError("Token is not valid", org.springframework.http.HttpStatus.FORBIDDEN);
+}
+
+
+
+	@Override
+	public Boolean validateToken(ServerHttpRequest request) {
+		//used to validate token passed within headres and this method is called where we need to secure endpoints.
+		String authorizationHeader = request.getHeaders().getFirst("Authorization");
+
+		String username = null;
+		String jwt = null;
+
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			jwt = authorizationHeader.substring("Bearer ".length());
+			username = jwtUtil.extractUsername(jwt);
+		} else
+			return false;
+
+		if (username != null) {
+
+			FarmerModel farmerModel = repo.findById(username).get();
+			if (farmerModel != null) {
+				if (jwtUtil.validateToken(jwt, farmerModel.getUserName())) {
+
+					return true;
+
+				} else
+					return false;
+			} else
+				return false;
+		} else
+			return false;
 	}
 
 }
