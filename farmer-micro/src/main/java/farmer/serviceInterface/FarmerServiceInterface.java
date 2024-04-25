@@ -19,9 +19,9 @@ public interface FarmerServiceInterface {
 
 	boolean register(FarmerDto farmerDto);
 
-	boolean addCrop(CropDto crop, ServerHttpRequest request);
+	boolean addCrop(CropDto crop);
 
-	boolean removeCrop(String userName, Integer id, ServerHttpRequest request);
+	boolean removeCrop(String userName, Integer id);
 
 	List<Crop> getFarmerCrops();
 
@@ -29,7 +29,7 @@ public interface FarmerServiceInterface {
 
 	boolean rateFarmer(RatingDto dto);
 
-	boolean editProfile(EditDto dto, ServerHttpRequest request);
+	boolean editProfile(EditDto dto);
 
 	Address getAddress(int id);
 
@@ -39,14 +39,12 @@ public interface FarmerServiceInterface {
 
 	Boolean saveFarmEmail(String Emails);
 
-	FarmerDto getFarmerDetails(String userName, ServerHttpRequest request);
+	FarmerDto getFarmerDetails(String userName);
 
-	List<Crop> getFarmerCrops(String userName, ServerHttpRequest request);
+	List<Crop> getFarmerCrops(String userName);
 
 	List<FarmerModel> getFarmers();
 
-	Boolean validateToken(ServerHttpRequest request);
-
-	List<SoldCrops> getsoldCrops(String userName, ServerHttpRequest request);
+	List<SoldCrops> getsoldCrops(String userName);
 
 }
