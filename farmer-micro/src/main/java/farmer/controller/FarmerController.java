@@ -62,13 +62,13 @@ public class FarmerController {
 	}
 
 	@PostMapping("/addCrop")
-	public boolean addCrop(@RequestBody CropDto crop,ServerHttpRequest request) {
-		return farmerService.addCrop(crop,request);
+	public boolean addCrop(@RequestBody CropDto crop) {
+		return farmerService.addCrop(crop);
 	}
 
 	@DeleteMapping("/removeCrop/{userName}/{id}")
-	public Boolean removeCrop(@PathVariable String userName ,@PathVariable Integer id,ServerHttpRequest request) {
-		return farmerService.removeCrop(userName,id,request);
+	public Boolean removeCrop(@PathVariable String userName ,@PathVariable Integer id) {
+		return farmerService.removeCrop(userName,id);
 	}
 
 	@PostMapping("/rating")
@@ -77,9 +77,9 @@ public class FarmerController {
 	}
 	
 	@PutMapping("/editProfile")
-	public boolean editProfile(@RequestBody EditDto dto,ServerHttpRequest request)
+	public boolean editProfile(@RequestBody EditDto dto)
 	{
-		return farmerService.editProfile(dto,request);
+		return farmerService.editProfile(dto);
 	}
 	
 	@GetMapping("/getAddress/{id}")
@@ -107,20 +107,20 @@ public class FarmerController {
 	}
 	
 	@GetMapping("/getFarmerDetails/{userName}")
-	public FarmerDto getDetails(@PathVariable String userName,ServerHttpRequest request)
+	public FarmerDto getDetails(@PathVariable String userName)
 	{
-		return farmerService.getFarmerDetails(userName,request);
+		return farmerService.getFarmerDetails(userName);
 	}
 	
 	@GetMapping("/getFarmerCrops/{userName}")
-	public List<Crop> getFarmerCrops(@PathVariable  String userName,ServerHttpRequest request)
+	public List<Crop> getFarmerCrops(@PathVariable  String userName)
 	{
-		return farmerService.getFarmerCrops(userName, request);
+		return farmerService.getFarmerCrops(userName);
 	}
 	@GetMapping("/getSoldCrops/{userName}")
-	public List<SoldCrops> getSoldCrops(@PathVariable String userName,ServerHttpRequest request)
+	public List<SoldCrops> getSoldCrops(@PathVariable String userName)
 	{
-		return farmerService.getsoldCrops(userName,request);
+		return farmerService.getsoldCrops(userName);
 	}
 	
 }
